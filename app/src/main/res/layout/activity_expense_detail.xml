@@ -76,9 +76,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Back to Home"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+
+    <Button
+        android:id="@+id/btn_add_detail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Add New Detail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBackHome" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

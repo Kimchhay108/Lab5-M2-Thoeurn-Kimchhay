@@ -30,11 +30,10 @@ public class MainActivity extends AppCompatActivity {
         Button addExpenseBtn = findViewById(R.id.button2);
         viewDetailBtn = findViewById(R.id.button3);
 
-
         viewDetailBtn.setEnabled(false);
         viewDetailBtn.setAlpha(0.5f);
 
-
+        // === ActivityResultLauncher for Add Expense ===
         ActivityResultLauncher<Intent> addExpenseLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -54,12 +53,29 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-
         addExpenseBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Add_Expesnse_activity.class);
             addExpenseLauncher.launch(intent);
         });
 
+        // === ActivityResultLauncher for Detail Activity ===
+        ActivityResultLauncher<Intent> detailLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        amount = data.getStringExtra("amount");
+                        currency = data.getStringExtra("currency");
+                        category = data.getStringExtra("category");
+                        remark = data.getStringExtra("remark");
+                        date = data.getStringExtra("date");
+
+                        lastExpenseText.setText(amount + " " + currency);
+                        viewDetailBtn.setEnabled(true);
+                        viewDetailBtn.setAlpha(1.0f);
+                    }
+                }
+        );
 
         viewDetailBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, activity_expense_detail.class);
@@ -68,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("category", category);
             intent.putExtra("remark", remark);
             intent.putExtra("date", date);
-            startActivity(intent);
+            detailLauncher.launch(intent);
         });
     }
 }
