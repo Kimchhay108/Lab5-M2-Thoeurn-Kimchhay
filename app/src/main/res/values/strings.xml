@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 🏷️ App Name -->
+    <string name="app_name">Manage Your Expense</string>
+
+    <!-- 🧾 Titles & Labels -->
+    <string name="title_main">Manage Your Expense,</string>
+    <string name="name">Thoeurn Kimchhay</string>
+    <string name="label_last_expense">My last expense was </string>
+    <string name="expense">0 </string>
+
+    <!-- 💰 Buttons -->
+    <string name="btn_add_expense">Add New Expense</string>
+    <string name="btn_view_expense">View Detail Expense</string>
+
+    <!-- 💬 Messages -->
+    <string name="msg_no_expense">No expense added yet.</string>
+    <string name="msg_last_expense">My last expense was %1$d %2$s</string>
+    <string name="msg_view_details">Showing expense details...</string>
+
+    <!-- Spinner categories -->
+    <string name="category_food">Food</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_other">Other</string>
+</resources>
