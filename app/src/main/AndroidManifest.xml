@@ -1,7 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.projectjava">
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,9 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Projectjava">
 
-        <!-- Home screen (launcher) -->
+        <!-- Login screen as launcher -->
         <activity
-            android:name=".MainActivity"
+            android:name=".log_in"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,16 +24,22 @@
             </intent-filter>
         </activity>
 
-        <!-- Expense Detail screen -->
+        <!-- Sign Up screen -->
         <activity
-            android:name=".activity_expense_detail"
+            android:name=".sign_up"
             android:exported="false" />
 
-        <!-- Add Expense screen -->
+        <!-- Home screen -->
         <activity
-            android:name=".Add_Expesnse_activity"
+            android:name=".MainActivity"
+            android:exported="true" />
+
+        <!-- Expense Detail screen -->
+        <activity
+            android:name=".DetailExpenseActivity"
             android:exported="false" />
 
     </application>
+
 
 </manifest>

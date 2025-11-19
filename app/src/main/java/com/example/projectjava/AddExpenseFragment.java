@@ -1,7 +1,5 @@
 package com.example.projectjava;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,43 +10,31 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 public class AddExpenseFragment extends Fragment {
 
-    private Spinner spinner;
-    private EditText amountEdit, remarkEdit;
-    private RadioGroup currencyGroup;
-    private Button addBtn;
+    private Spinner spinnerCategory;
+    private EditText editAmount, editRemark;
+    private RadioGroup radioGroupCurrency;
+    private Button btnAddExpense;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Inflate fragment layout
         View view = inflater.inflate(R.layout.activity_add_expesnse, container, false);
 
-        // Edge-to-edge padding
-        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
         // Initialize views
-        spinner = view.findViewById(R.id.spinner);
-        amountEdit = view.findViewById(R.id.editTextText);
-        currencyGroup = view.findViewById(R.id.radioGroup1);
-        remarkEdit = view.findViewById(R.id.remark2);
-        addBtn = view.findViewById(R.id.button);
+        spinnerCategory = view.findViewById(R.id.spinner);
+        editAmount = view.findViewById(R.id.editTextText);
+        radioGroupCurrency = view.findViewById(R.id.radioGroup1);
+        editRemark = view.findViewById(R.id.remark2);
+        btnAddExpense = view.findViewById(R.id.button);
 
         // Spinner setup
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -57,29 +43,53 @@ public class AddExpenseFragment extends Fragment {
                 new String[]{"Food", "Transport", "Shopping", "Entertainment", "Other"}
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        spinnerCategory.setAdapter(adapter);
 
-        // Add button click
-        addBtn.setOnClickListener(v -> {
-            String amount = amountEdit.getText().toString();
-            String currency = ((RadioButton) view.findViewById(currencyGroup.getCheckedRadioButtonId())).getText().toString();
-            String category = spinner.getSelectedItem().toString();
-            String remark = remarkEdit.getText().toString();
-            String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        // Add Expense Button click
+        btnAddExpense.setOnClickListener(v -> {
 
-            // Return data to parent fragment/activity
-            Intent result = new Intent();
-            result.putExtra("amount", amount);
-            result.putExtra("currency", currency);
-            result.putExtra("category", category);
-            result.putExtra("remark", remark);
-            result.putExtra("date", date);
-
-            // Send result back
-            if (getActivity() != null) {
-                getActivity().setResult(Activity.RESULT_OK, result);
-                getActivity().finish();
+            // 1️⃣ Check currency selection
+            int selectedId = radioGroupCurrency.getCheckedRadioButtonId();
+            if (selectedId == -1) {
+                Toast.makeText(getContext(), "Please select a currency", Toast.LENGTH_SHORT).show();
+                return;
             }
+            RadioButton selectedButton = view.findViewById(selectedId);
+
+            // 2️⃣ Validate amount
+            String amountText = editAmount.getText().toString().trim();
+            if (amountText.isEmpty()) {
+                Toast.makeText(getContext(), "Please enter an amount", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double amount;
+            try {
+                amount = Double.parseDouble(amountText);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Invalid amount", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 3️⃣ Collect other inputs
+            String currency = selectedButton.getText().toString();
+            String category = spinnerCategory.getSelectedItem().toString();
+            String remark = editRemark.getText().toString().trim();
+            Date date = new Date(); // current date
+
+            // 4️⃣ Create Expense object and add to ExpenseData
+            Expense newExpense = new Expense(remark, amount, currency, category, date);
+            ExpenseData.addExpense(newExpense);
+
+            // 5️⃣ Send result to parent fragment (Expenselist)
+            Bundle result = new Bundle();
+            result.putString("expenseId", newExpense.getId());
+            getParentFragmentManager().setFragmentResult("addExpense", result);
+
+            // 6️⃣ Close AddExpenseFragment properly
+            requireActivity().getSupportFragmentManager().popBackStack();
+
+            Toast.makeText(getContext(), "Expense added!", Toast.LENGTH_SHORT).show();
         });
 
         return view;
