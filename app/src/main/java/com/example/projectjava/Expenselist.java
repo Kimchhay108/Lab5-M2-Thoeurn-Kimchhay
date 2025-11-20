@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,38 +14,50 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class Expenselist extends Fragment {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+public class Expenselist extends Fragment {
     private RecyclerView recyclerView;
     private ExpenseAdapter adapter;
     private List<Expense> expenseList;
+    private final String DB_NAME = "ff4ad50d-834a-40a6-bcd3-7bbe2d6b8788"; // same new GUID
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense_list, container, false);
-
         recyclerView = view.findViewById(R.id.recyclerViewExpenses);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Load expenses from ExpenseData
-        expenseList = ExpenseData.getDummyExpenses();
-        adapter = new ExpenseAdapter(getContext(), expenseList); // pass context
-        recyclerView.setAdapter(adapter);
+        fetchExpenses();
 
-        // Listen for new expenses added from AddExpenseFragment
-        getParentFragmentManager().setFragmentResultListener("addExpense", this, (requestKey, bundle) -> {
-            String expenseId = bundle.getString("expenseId");
-            Expense newExpense = ExpenseData.getExpenseById(expenseId);
-            if (newExpense != null) {
-                adapter.notifyItemInserted(expenseList.size() - 1);
-                recyclerView.scrollToPosition(expenseList.size() - 1);
-            }
+        // Listen for new expense added
+        getParentFragmentManager().setFragmentResultListener("refreshExpenses", this, (requestKey, bundle) -> {
+            fetchExpenses(); // reload list from API
         });
 
         return view;
+    }
+
+    private void fetchExpenses() {
+        ApiClient.getApi().getExpenses(DB_NAME).enqueue(new Callback<List<Expense>>() {
+            @Override
+            public void onResponse(Call<List<Expense>> call, Response<List<Expense>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    expenseList = response.body();
+                    adapter = new ExpenseAdapter(getContext(), expenseList);
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Toast.makeText(getContext(), "Failed to fetch expenses", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Expense>> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

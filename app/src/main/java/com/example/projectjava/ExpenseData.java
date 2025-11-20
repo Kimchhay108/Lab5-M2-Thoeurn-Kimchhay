@@ -1,60 +1,49 @@
 package com.example.projectjava;
 
-import com.example.projectjava.Expense;
-
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class ExpenseData {
+
     private static final List<Expense> expenses = new ArrayList<>();
 
     static {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-            expenses.add(new Expense("Lunch", 20000, "KHR", "Food", dateFormat.parse("2025-03-01")));
-            expenses.add(new Expense("Taxi", 2.5, "USD", "Transport", dateFormat.parse("2025-03-02")));
-            expenses.add(new Expense("Groceries", 80000, "KHR", "Shopping", dateFormat.parse("2025-03-03")));
-            expenses.add(new Expense("Coffee", 3.0, "USD", "Beverage", dateFormat.parse("2025-03-04")));
-            expenses.add(new Expense("Movie Ticket", 32000, "KHR", "Entertainment", dateFormat.parse("2025-03-05")));
-            expenses.add(new Expense("Dinner", 12.0, "USD", "Food", dateFormat.parse("2025-03-06")));
-            expenses.add(new Expense("Bus Fare", 6000, "KHR", "Transport", dateFormat.parse("2025-03-07")));
-            expenses.add(new Expense("Gym Membership", 30.0, "USD", "Fitness", dateFormat.parse("2025-03-08")));
-            expenses.add(new Expense("Electricity Bill", 200000, "KHR", "Utilities", dateFormat.parse("2025-03-09")));
-            expenses.add(new Expense("Internet Bill", 25.0, "USD", "Utilities", dateFormat.parse("2025-03-10")));
-        } catch (Exception e) {
+            // Add dummy expenses with proper UUID and remark
+            expenses.add(new Expense(UUID.randomUUID().toString(), 20000.0, "KHR", "Food", "Lunch", "dummyUserId", dateFormat.parse("2025-03-01")));
+            expenses.add(new Expense(UUID.randomUUID().toString(), 1500.0, "KHR", "Transport", "Bus ticket", "dummyUserId", dateFormat.parse("2025-03-02")));
+            expenses.add(new Expense(UUID.randomUUID().toString(), 8000.0, "KHR", "Entertainment", "Movie night", "dummyUserId", dateFormat.parse("2025-03-03")));
+            expenses.add(new Expense(UUID.randomUUID().toString(), 50000.0, "KHR", "Shopping", "Shopping", "dummyUserId", dateFormat.parse("2025-03-04")));
+            expenses.add(new Expense(UUID.randomUUID().toString(), 4000.0, "KHR", "Food", "Coffee", "dummyUserId", dateFormat.parse("2025-03-05")));
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
-    // Get all expenses
     public static List<Expense> getDummyExpenses() {
         return expenses;
     }
 
-    // Find expense by ID
-    public static Expense getExpenseById(String id) {
-        for (Expense expense : expenses) {
-            if (expense.getId().equals(id)) {
-                return expense;
-            }
-        }
-        return null;
-    }
-
-    // Get last added expense
-    public static Expense getLastExpense() {
-        if (!expenses.isEmpty()) {
-            return expenses.get(expenses.size() - 1);
-        }
-        return null;
-    }
-
-    // Add a new expense dynamically
     public static void addExpense(Expense expense) {
         expenses.add(expense);
+    }
+
+    public static Expense getExpenseById(String id) {
+        for (Expense e : expenses) {
+            if (e.getId().equals(id)) return e;
+        }
+        return null;
+    }
+
+    public static Expense getLastExpense() {
+        if (expenses.isEmpty()) return null;
+        return expenses.get(expenses.size() - 1);
     }
 }
