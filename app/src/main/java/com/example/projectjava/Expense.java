@@ -1,9 +1,10 @@
 package com.example.projectjava;
 
 import com.google.gson.annotations.JsonAdapter;
+import java.io.Serializable;
 import java.util.Date;
 
-public class Expense {
+public class Expense implements Serializable {
     private String id;
     private double amount;
     private String currency;

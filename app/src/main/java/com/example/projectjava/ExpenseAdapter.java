@@ -6,19 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.text.DecimalFormat;
+import java.io.Serializable;
 import java.util.List;
 
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
-    private final List<Expense> expenseList;
     private final Context context;
+    private final List<Expense> expenseList;
 
-    // Constructor accepts context
     public ExpenseAdapter(Context context, List<Expense> expenseList) {
         this.context = context;
         this.expenseList = expenseList;
@@ -27,8 +24,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @NonNull
     @Override
     public ExpenseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_expense, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_expense, parent, false);
         return new ExpenseViewHolder(view);
     }
 
@@ -36,19 +32,15 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenseList.get(position);
 
-        // Format amount without scientific notation
-        DecimalFormat df = new DecimalFormat("#,###.##");
-        String formattedAmount = df.format(expense.getAmount()) + " " + expense.getCurrency();
-
-        holder.tvAmountCurrency.setText(formattedAmount);
+        holder.tvAmountCurrency.setText(String.format("%.2f %s", expense.getAmount(), expense.getCurrency()));
         holder.tvDate.setText(expense.getFormattedDate());
         holder.tvCategory.setText(expense.getCategory());
         holder.tvRemark.setText(expense.getRemark());
 
-        // Open detail activity on item click
+        // --- Add click listener ---
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailExpenseActivity.class);
-            intent.putExtra("expenseId", expense.getId());
+            intent.putExtra("expense", (Serializable) expense); // pass Expense object
             context.startActivity(intent);
         });
     }
